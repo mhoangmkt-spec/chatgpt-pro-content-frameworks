@@ -1,111 +1,163 @@
-# Buổi chia sẻ: Dùng ChatGPT Pro để xây content có chất lượng
+# AI Agent cho chuyen gia ca nhan sang tao noi dung
 
-## Mục tiêu
+## Dinh huong moi
 
-Buổi sáng ngắn, thiên về tư duy. Người nghe có framework và từ khóa để tự phân tích content AI, research thông tin có kiểm chứng và hiểu nền tảng cho workplace/skill sau này. Không dạy thao tác công cụ chi tiết.
+Buoi nay di theo viec nguoi nghe that su muon lam: tim y tuong moi, research bai viet nuoc ngoai, viet mot bai co luan diem, va hieu vi sao ChatGPT Desktop/Codex manh hon cach chat thong thuong.
 
-## Thông điệp trung tâm
+Thong diep trung tam:
 
-> Prompt cho AI câu lệnh. Context cho AI sự thấu hiểu. System cho AI cách làm ổn định.
+> AI khong chi de viet nhanh hon. AI giup minh tim nguyen lieu, dung luan diem, va tao mot quy trinh viet co the lap lai.
 
-## Thời lượng: 100 phút
+## Thoi luong goi y: 100 phut
 
-| Phần | Thời lượng | Kết quả |
+| Phan | Thoi luong | Nguoi nghe nhan duoc |
 |---|---:|---|
-| Prompt đến System | 15 phút | Mô hình 3 cấp độ dùng AI |
-| AI Content Operating System | 20 phút | Bốn lớp tạo content ổn định |
-| E-E-A-T + People-first | 25 phút | Rubric đánh giá content AI |
-| AI research có kiểm chứng | 25 phút | Workflow research 6 bước |
-| Slide editable + tổng kết | 15 phút | Cách nhìn deck như một lập luận |
+| 1. Vi sao ChatGPT thuong chua du | 10 phut | Thay van de nam o context va workflow |
+| 2. ChatGPT Desktop, Work va Codex khac gi | 15 phut | Biet dung dung che do cho tung viec |
+| 3. Research y tuong moi tu bai nuoc ngoai | 25 phut | Biet cach tim, loc, gom y tuong thanh nguyen lieu |
+| 4. Bien y tuong thanh luan diem content | 15 phut | Hieu y tuong chi la dau vao, luan diem moi la xuong song |
+| 5. Quy trinh viet mot bai bang AI | 25 phut | Biet tung buoc viet bai va cho con nguoi can thiep |
+| 6. Danh gia content AI va slide editable | 10 phut | Co checklist chat luong va cach trinh bay |
 
-## 1. Ba cấp độ dùng AI
+## 1. Vi sao ChatGPT thuong chua du
 
-```text
-Cấp 1: Prompt  → hỏi một lần, nhận một lần
-Cấp 2: Context → AI hiểu thương hiệu, người đọc và mục tiêu
-Cấp 3: System  → AI làm theo quy trình, tiêu chuẩn và tài sản tích lũy
-```
-
-Câu hỏi phân tích: vấn đề nằm ở prompt, thiếu context hay thiếu system? Nếu lặp lại việc này 20 lần, thứ gì cần được lưu lại?
-
-## 2. AI Content Operating System
+Nguoi moi thuong dung AI theo kieu:
 
 ```text
-Context → Standards → Workflow → Assets
+Nhap prompt -> nhan bai viet -> sua vai cau -> dang
 ```
 
-| Lớp | Câu hỏi | Từ khóa |
+Van de: AI viet duoc chu, nhung khong tu co goc nhin, trai nghiem, nguon tin, logic kinh doanh va gu bien tap cua nguoi viet.
+
+Khung de noi:
+
+```text
+Prompt cho AI cau lenh.
+Context cho AI su thau hieu.
+Workflow cho AI cach lam viec.
+Con nguoi cho bai viet goc nhin.
+```
+
+## 2. ChatGPT Desktop, Work va Codex khac gi
+
+Theo cach noi don gian cho nguoi moi:
+
+| Che do | Nen dung khi | Vi du content |
 |---|---|---|
-| Context | AI cần hiểu gì trước khi viết? | Brand voice, audience, positioning, offer, proof |
-| Standards | Một output tốt trông như thế nào? | Quality bar, writing guide, checklist, anti-pattern |
-| Workflow | Làm theo trình tự nào, duyệt ở đâu? | Brief, outline, research, draft, review, approval |
-| Assets | Điều gì được tích lũy để tái dùng? | Workspace, Markdown, template, prompt library, skill |
+| ChatGPT Chat | Hoi nhanh, brainstorm, viet thu mot doan | Tim 10 hook, giai thich mot khai niem |
+| ChatGPT Work | Lam viec dai hon, co file va deliverable | Research, tao report, tao outline, tao slide |
+| Codex | Lam voi thu muc local, file, repo, terminal | Tao project content, luu Markdown, tao skill, sua deck HTML |
 
-Khái niệm nền: Workspace = văn phòng số; file Markdown = nơi lưu context/quy tắc; Source of truth = một nguồn chuẩn duy nhất; Skill = SOP đóng gói cho AI khi workflow đã ổn định.
+Y chinh: Chat thuong la mot cuoc hoi dap. Desktop/Work/Codex bien AI thanh moi truong lam viec co file, ngu canh va quy trinh.
 
-## 3. Đánh giá content thời AI: E-E-A-T + People-first
+Tu khoa can giai thich: Project, Workspace, Local files, Markdown, Source of truth, Workflow, Skill.
 
-### Nói đúng về E-E-A-T
+## 3. Bieu dien research y tuong moi
 
-E-E-A-T không phải một điểm SEO hoặc ranking factor độc lập. Google dùng nhiều tín hiệu để nhận diện nội dung hữu ích; Trust là thành tố quan trọng nhất. Đây là lăng kính rất tốt để tự chấm content. Với chủ đề YMYL như sức khỏe, tài chính, an toàn, tiêu chuẩn về độ tin cậy cao hơn.
+Muc tieu demo: cho nguoi nghe thay AI giup minh nhin ra y tuong moi tu cac bai viet nuoc ngoai, khong phai copy bai nuoc ngoai.
 
-| Thành tố | Câu hỏi soi content AI | Dấu hiệu nên thêm |
-|---|---|---|
-| Experience - Trải nghiệm | Người viết đã làm, dùng hoặc đo lường việc này chưa? | Câu chuyện thật, quy trình thật, bài học trả giá |
-| Expertise - Chuyên môn | Lập luận có đúng bản chất nghề? | Cơ chế, trade-off, giới hạn áp dụng |
-| Authoritativeness - Thẩm quyền | Vì sao nguồn này đáng được lắng nghe? | Case, thành tích kiểm được, nguồn gốc rõ |
-| Trust - Độ tin cậy | Người đọc kiểm tra được gì? | Link nguồn, ngày dữ liệu, tách fact/opinion |
-| Helpfulness - Hữu ích | Nó giúp đúng người giải quyết đúng việc? | Bối cảnh, quyết định và bước tiếp theo rõ |
+Quy trinh:
 
 ```text
-Content bền = Hữu ích × Trải nghiệm × Chuyên môn × Độ tin cậy
+Chu de minh quan tam
+-> Tim bai/quoc te dang noi gi
+-> Tach idea, insight, framework, case
+-> Loc theo nguoi doc Viet Nam
+-> Chon y tuong bo tro cho luan diem cua minh
 ```
-
-Ba câu hỏi people-first của Google: Who tạo nội dung? How nội dung được tạo ra? Why nội dung này tồn tại?
-
-## 4. Research với AI có kiểm chứng
-
-AI không làm thay kết luận. AI dùng để chia nhỏ vấn đề, tìm nguồn, trích xuất, đối chiếu và tạo research brief. Con người chịu trách nhiệm cho kết luận.
-
-```text
-Question → Research map → Source stack → Extract → Verify → Synthesize → Editorial angle
-```
-
-1. **Question:** đóng khung câu hỏi đủ hẹp để quyết định được.
-2. **Research map:** tách thành các nhánh: dữ liệu, cơ chế, case, phản biện, hệ quả.
-3. **Source stack:** ưu tiên primary source → tài liệu chuyên môn → báo cáo/nghiên cứu → case thực tế → opinion tham khảo.
-4. **Extract:** lấy claim, evidence, bối cảnh, ngày, giới hạn; không bê văn.
-5. **Verify:** claim quan trọng phải có nguồn gốc hoặc nguồn độc lập đối chiếu. Gắn nhãn Fact / Inference / Opinion.
-6. **Synthesize:** AI lập bảng đồng thuận và mâu thuẫn; con người chốt editorial angle.
-
-Từ khóa: Claim, Evidence, Primary source, Corroboration, Recency, Applicability, Fact/Inference/Opinion, Citation trail.
 
 Prompt demo:
 
-> Tôi cần research cho câu hỏi: [câu hỏi]. Hãy lập research map gồm các nhánh cần chứng minh; mỗi nhánh nêu loại nguồn gốc ưu tiên, từ khóa tìm kiếm và rủi ro suy luận sai. Chưa kết luận, không bịa số liệu.
-
-## 5. Slide editable
-
 ```text
-Idea → Storyline → Slide logic → Layout → Visual → Editable deck
+Toi dang muon viet ve [chu de].
+Hay de xuat cac huong research tu bai viet nuoc ngoai:
+1. Nhung tu khoa tieng Anh nen tim
+2. Loai nguon nen uu tien
+3. Nhung goc nhin moi co the khai thac
+4. Cach moi y tuong co the bo tro cho mot luan diem content
+Chua viet bai. Chi lap ban do research.
 ```
 
-- Slide là lập luận, không phải trang trí.
-- One slide, one job.
-- Text, chart, bảng và shape phải sửa được; ảnh chỉ là ảnh minh họa.
-- AI làm bản nháp; người làm chủ chịu trách nhiệm về lập luận, số liệu, quyết định cuối.
+## 4. Y tuong bo tro cho luan diem
 
-Sáu loại slide: Hook, Problem, Insight, Framework, Proof, Action.
+Can noi ro diem nay vi nguoi moi hay nham: research nhieu khong dong nghia bai hay.
 
-## Việc tiếp theo
+```text
+Idea = nguyen lieu
+Insight = dieu minh nhan ra
+Luan diem = cau minh muon thuyet phuc nguoi doc tin
+Dan chung = thu lam luan diem dang tin hon
+```
 
-- `SLIDE-OUTLINE.md`: 20-25 slide cho buổi chia sẻ.
-- `RESEARCH-DEMO.md`: case research demo.
-- `E-E-A-T-RUBRIC.md`: checklist một trang.
-- `STARTER-WORKPLACE/`: bộ file MD mẫu cho buổi nâng cao.
+Vi du:
 
-## Nguồn
+Chu de: AI viet content.
 
-- Google Search Central: Creating Helpful, Reliable, People-First Content.
+- Idea nuoc ngoai: AI lam content dai tra lan nhanh.
+- Insight: van de khong nam o toc do viet, ma nam o chat luong dau vao va chuan bien tap.
+- Luan diem: nguoi lam content can xay he dieu hanh content, khong chi hoc prompt.
+- Dan chung: E-E-A-T, people-first, case that trong agency, quy trinh research.
+
+## 5. Quy trinh viet mot bai bang AI
+
+Quy trinh de noi that don gian:
+
+```text
+Brief -> Research -> Luan diem -> Outline -> Draft -> Human edit -> Fact check -> Publish
+```
+
+| Buoc | AI lam gi | Con nguoi can thiep o dau |
+|---|---|---|
+| Brief | Hoi nguoc de lam ro nguoi doc, muc tieu, kenh | Chon dung nguoi doc va viec can thuyet phuc |
+| Research | Tim huong, gom nguon, tach claim | Kiem tra nguon, bo nguon yeu |
+| Luan diem | De xuat cac angle | Chon goc nhin co trai nghiem va lien quan toi minh |
+| Outline | Sap xep mach bai | Cat phan lan man, them logic ban hang/kinh doanh |
+| Draft | Viet ban dau | Them vi du that, ngon ngu rieng, cau chuyen that |
+| Human edit | Goi y sua | Quyet dinh giong, nhip, do sac, do dung |
+| Fact check | Liet ke claim can kiem | Kiem tra so lieu, ngay thang, nguon goc |
+| Publish | Tao title, caption, CTA | Chon thong diep cuoi va ngu canh dang |
+
+Cho con nguoi tao khac biet: trai nghiem that, gu bien tap, hieu khach hang, quyet dinh luan diem, biet cai gi khong nen viet.
+
+## 6. Danh gia content AI: E-E-A-T
+
+E-E-A-T nen dua vao, nhung noi dung cach:
+
+- Khong goi no la diem SEO truc tiep.
+- Dung no nhu mot rubric de so content AI.
+- Trong E-E-A-T, Trust la trung tam.
+- Chu de YMYL can tieu chuan cao hon.
+
+Checklist mot cau:
+
+```text
+Bai nay co trai nghiem that khong?
+Co chuyen mon that khong?
+Co nguon/ly do de tin khong?
+Co giup dung nguoi doc ra quyet dinh tot hon khong?
+```
+
+## 7. Slide editable
+
+Neu bieu dien slide, chi can noi mot framework:
+
+```text
+Idea -> Storyline -> Slide logic -> Layout -> Editable deck
+```
+
+Y chinh: slide khong phai anh chup dep. Slide lam viec duoc la slide co text, bang, shape, chart sua duoc. AI tao ban nhap, con nguoi chot lap luan.
+
+## Viec nen lam tiep trong project
+
+- Tao `RESEARCH-DEMO.md` voi mot case cu the, vi du AI content trong thoi ky Google people-first.
+- Tao `WRITING-WORKFLOW.md` cho quy trinh viet mot bai.
+- Tao `STARTER-WORKPLACE/` gom cac file mau: `BRIEF.md`, `RESEARCH.md`, `OUTLINE.md`, `DRAFT.md`, `FACT-CHECK.md`, `STYLE-GUIDE.md`.
+
+## Nguon chinh
+
+- OpenAI Help: ChatGPT Work and Codex.
+- OpenAI Help: Moving to the new ChatGPT desktop app.
+- OpenAI Help: Projects in ChatGPT.
+- Google Search Central: Creating helpful, reliable, people-first content.
 - Google Search Central Blog: E-A-T gets an extra E for Experience.
-- OpenAI Help: Skills in ChatGPT.
+
