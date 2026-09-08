@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Buổi chia sẻ - Dùng ChatGPT Pro để xây content có chất lượng</title>
+<!--
+  Deck 21 slide, đen/trắng, text sửa được.
+  CÁCH DÙNG:
+  1. Mở file này bằng trình duyệt (Chrome/Edge).
+  2. Phím mũi tên Trái/Phải, Space, PageUp/Down để chuyển slide. F = toàn màn hình.
+  3. Bấm nút "Sửa văn bản" (phím E) rồi bấm thẳng vào chữ để sửa.
+  4. Khung ảnh là placeholder: khi đang ở chế độ sửa, bấm vào khung để tải ảnh lên hoặc dán đường dẫn.
+  5. "Lưu file đã sửa" tải về bản HTML đã chỉnh (lưu được mọi text + ảnh đã dán).
+-->
+<style>
+  :root{
+    --paper:#ffffff; --ink:#101010; --gray:#6f6f6f; --muted:#9a9a9a;
+    --line:#dddddd; --soft:#f3f3f3; --serif:Cambria, Georgia, "Times New Roman", serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    background:#232323; color:var(--ink);
+    font:15px/1.55 "Segoe UI", Roboto, Arial, sans-serif;
+    overflow:hidden;
+  }
+  #stage{position:fixed; inset:0; display:flex; align-items:center; justify-content:center;}
+  #deck{transform-origin:center center; display:flex; flex-direction:column; flex:none;}
+
+  /* ---------- slide base ---------- */
+  .slide{
+    width:1280px; height:720px; background:var(--paper); color:var(--ink);
+    flex:none; position:relative; overflow:hidden;
+    box-shadow:0 0 0 1px rgba(255,255,255,.08);
+  }
+  .slide.inv{background:var(--ink); color:#f4f4f4;}
+  .s-in{height:100%; display:flex; flex-direction:column; padding:46px 72px 40px;}
+  .top{
+    display:flex; justify-content:space-between; align-items:baseline; gap:16px;
+    font-size:12px; letter-spacing:.2em; text-transform:uppercase; color:var(--gray);
+    border-bottom:1px solid var(--line); padding-bottom:12px;
+  }
+  .inv .top{border-color:#333; color:#8f8f8f;}
+  .mid{flex:1; display:flex; flex-direction:column; justify-content:center; padding:26px 0 20px; min-height:0;}
+  .bottom{
+    display:flex; justify-content:space-between; align-items:baseline; gap:16px;
+    font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted);
+    border-top:1px solid #eaeaea; padding-top:10px;
+  }
+  .inv .bottom{border-color:#2a2a2a; color:#666;}
+  .bottom .n{font-size:13px; letter-spacing:.12em; color:var(--ink);}
+  .inv .bottom .n{color:#f0f0f0;}
+
+  /* ---------- typography ---------- */
+  .disp{font-family:var(--serif); font-weight:600;}
+  h1{font-family:var(--serif); font-weight:700; font-size:64px; line-height:1.08; letter-spacing:-.5px;}
+  h2{font-family:var(--serif); font-weight:700; font-size:52px; line-height:1.12; letter-spacing:-.3px;}
+  .big-q{font-family:var(--serif); font-weight:700;}
+  .sub{color:var(--gray); font-size:17px; line-height:1.6;}
+  .inv .sub{color:#b9b9b9;}
+  .note{color:var(--muted); font-size:13px; line-height:1.6;}
+  .inv .note{color:#777;}
+
+  /* ---------- shared bits ---------- */
+  .rule{height:1px; background:var(--ink); border:0; margin:22px 0;}
+  .inv .rule{background:#e8e8e8;}
+  .num-xl{font-family:var(--serif); font-weight:700; font-size:120px; line-height:1; color:var(--soft);}
+  .inv .num-xl{color:#222;}
+  .arrow{color:#000; font-size:26px;}
+  .inv .arrow{color:#fff;}
+
+  /* rows / grids */
+  .rows{display:flex; flex-direction:column;}
+  .row{
+    display:grid; align-items:center; gap:24px;
+    border-bottom:1px solid var(--line); padding:13px 2px;
+  }
+  .inv .row{border-color:#333;}
+  .row:last-child{border-bottom:0;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:26px;}
+  .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:26px;}
+  .grid4{display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:22px;}
+
+  .card{border:1px solid var(--line); padding:20px 20px 18px;}
+  .card.solid{border:0; background:var(--soft);}
+  .inv .card{border-color:#333;}
+  .inv .card.solid{background:#1c1c1c;}
+  .card .k{font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--gray); margin-bottom:8px;}
+  .inv .card .k{color:#8f8f8f;}
+  .card .t{font-family:var(--serif); font-weight:700; font-size:21px; line-height:1.3; margin-bottom:6px;}
+  .card p{font-size:14.5px; color:var(--gray); line-height:1.55;}
+  .inv .card p{color:#b3b3b3;}
+
+  .chip{
+    display:inline-block; border:1px solid var(--ink); padding:3px 12px;
+    font-size:12.5px; letter-spacing:.04em; margin:3px 4px 3px 0; color:var(--ink);
+  }
+  .inv .chip{border-color:#e8e8e8; color:#f4f4f4;}
+  .chip.soft{border-color:var(--line); color:var(--gray);}
+  .inv .chip.soft{border-color:#3a3a3a; color:#aaa;}
+
+  /* ---------- image placeholder ---------- */
+  figure.ph{
+    border:1.5px dashed var(--muted); background:
+      repeating-linear-gradient(45deg,#fafafa,#fafafa 10px,#f2f2f2 10px,#f2f2f2 20px);
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    padding:14px; margin:0; overflow:hidden; min-height:60px; position:relative;
+  }
+  .inv figure.ph{background:repeating-linear-gradient(45deg,#232323,#232323 10px,#1c1c1c 10px,#1c1c1c 20px); border-color:#5a5a5a;}
+  figure.ph .lbl{font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); line-height:1.5;}
+  .inv figure.ph .lbl{color:#777;}
+  figure.ph img{width:100%; height:100%; object-fit:cover; position:absolute; inset:0;}
+  figure.ph.has-img .lbl{display:none;}
+  .editing figure.ph:not(.has-img){cursor:pointer;}
+  .editing figure.ph:not(.has-img):hover{border-color:#000; background:#eee;}
+  .editing figure.ph.has-img{cursor:pointer;}
+
+  /* ---------- editable ---------- */
+  [data-edit]{cursor:default;}
+  .editing [data-edit]{cursor:text;}
+  .editing [data-edit]:hover{outline:1px dashed #b5b5b5; outline-offset:2px;}
+  .editing [data-edit]:focus{outline:1.5px dashed #000; outline-offset:2px;}
+  .inv.editing [data-edit]:focus{outline-color:#fff;}
+
+  /* ---------- toolbar / chrome ---------- */
+  #bar{
+    position:fixed; left:50%; bottom:10px; transform:translateX(-50%);
+    display:flex; align-items:center; gap:6px; background:#101010; color:#eee;
+    border-radius:999px; padding:6px 10px; font-size:12.5px; z-index:60;
+    box-shadow:0 4px 18px rgba(0,0,0,.45); white-space:nowrap;
+  }
+  #bar button{
+    font:inherit; color:inherit; background:none; border:0; cursor:pointer;
+    padding:5px 11px; border-radius:999px; letter-spacing:.02em;
+  }
+  #bar button:hover{background:#333;}
+  #bar button.on{background:#f2f2f2; color:#101010; font-weight:600;}
+  #bar .ct{font-variant-numeric:tabular-nums; padding:0 6px; color:#cfcfcf;}
+
+  /* image action menu */
+  #imgmenu{
+    position:fixed; z-index:80; background:#101010; color:#eee; min-width:230px;
+    box-shadow:0 8px 24px rgba(0,0,0,.5); padding:6px 0; font-size:13.5px;
+  }
+  #imgmenu button{display:block; width:100%; text-align:left; background:none; border:0; color:inherit; font:inherit; padding:9px 14px; cursor:pointer;}
+  #imgmenu button:hover{background:#2e2e2e;}
+  #imgmenu .cap{display:block; padding:7px 14px 3px; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:#8f8f8f;}
+
+  /* ---------- specific slide layouts ---------- */
+  .cover-grid{display:grid; grid-template-columns:1fr 300px; gap:60px; align-items:center;}
+
+  .agenda-table .row{grid-template-columns:56px 1.35fr 120px 1.6fr;}
+  .agenda-table .num{font-family:var(--serif); font-weight:700; font-size:26px;}
+  .agenda-table .pn{font-weight:600; font-size:17.5px;}
+  .agenda-table .tm{font-variant-numeric:tabular-nums; color:var(--gray);}
+  .agenda-table .out{color:var(--gray); font-size:14.5px;}
+  .agenda-table .row.total{border-top:1.5px solid var(--ink); font-weight:600; border-bottom:0;}
+  .inv .agenda-table .row.total{border-color:#fff;}
+
+  .levels .row{grid-template-columns:150px 1fr 1fr; gap:26px; padding:16px 2px;}
+  .levels .lvl{font-family:var(--serif); font-weight:700; font-size:20px; letter-spacing:.02em;}
+  .levels .lvl b{display:block; font-size:11px; font-family:"Segoe UI",sans-serif; letter-spacing:.2em; color:var(--muted); font-weight:600; margin-bottom:2px;}
+  .levels .claim{font-family:var(--serif); font-style:italic; font-size:19.5px; font-weight:600;}
+  .levels .why{color:var(--gray); font-size:14.5px;}
+
+  .diag .card{padding:26px 24px;}
+  .diag .lvl{font-family:var(--serif); font-weight:700; font-size:27px; margin-bottom:4px;}
+  .diag .dau{font-size:14.5px; color:var(--gray); margin:8px 0 2px;}
+  .diag .hoi{font-weight:600; font-size:15.5px;}
+
+  .osloop{display:grid; grid-template-columns:1fr auto 1fr auto 1fr auto 1fr; gap:8px; align-items:center;}
+  .osloop .cell{text-align:center; border:1.5px solid var(--ink); padding:20px 12px;}
+  .inv .osloop .cell{border-color:#f0f0f0;}
+  .osloop .c{font-family:var(--serif); font-weight:700; font-size:30px; letter-spacing:.02em;}
+  .osloop .q{font-size:12.5px; color:var(--gray); margin-top:6px; line-height:1.45;}
+  .inv .osloop .q{color:#aaa;}
+
+  .ostable .row{grid-template-columns:1.1fr 1.9fr; gap:30px; padding:11px 2px;}
+  .ostable .lay{font-family:var(--serif); font-weight:700; font-size:20px;}
+  .ostable .lay span{display:block; font-family:"Segoe UI",sans-serif; font-weight:400; font-size:12px; letter-spacing:.02em; color:var(--muted); margin-top:1px;}
+
+  .rubric-table .row{grid-template-columns:64px 230px 1.25fr 1.35fr; gap:18px; padding:8px 2px; align-items:start;}
+  .rubric-table .lt{font-size:10.5px; letter-spacing:.14em; color:var(--muted); padding-top:3px;}
+  .rubric-table .comp{font-family:var(--serif); font-weight:700; font-size:18px;}
+  .rubric-table .q{font-style:italic; font-size:14.5px; color:var(--ink);}
+  .inv .rubric-table .q{color:#eee;}
+  .rubric-table .sig{font-size:13.5px; color:var(--gray);}
+
+  .pf .card{padding:34px 22px 26px; text-align:center;}
+  .pf .who{font-family:var(--serif); font-weight:700; font-size:44px;}
+  .pf .whofull{color:var(--gray); font-size:14.5px; margin-top:8px;}
+
+  .res-role{display:grid; grid-template-columns:1.2fr 1fr; gap:40px; align-items:center;}
+  .res-role .col b{display:block; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:10px;}
+  .res-role ul{list-style:none;}
+  .res-role li{position:relative; padding-left:22px; margin:7px 0; font-size:16px;}
+  .res-role li::before{content:""; position:absolute; left:0; top:.55em; width:9px; height:9px; border:1.5px solid #000; border-radius:50%;}
+  .inv .res-role li::before{border-color:#fff;}
+
+  .flow6 .step{display:grid; grid-template-columns:58px 1.7fr 3fr; gap:16px; align-items:baseline; border-bottom:1px solid var(--line); padding:7px 0;}
+  .inv .flow6 .step{border-color:#333;}
+  .flow6 .snum{font-family:var(--serif); font-weight:700; font-size:26px; color:#000;}
+  .inv .flow6 .snum{color:#fff;}
+  .flow6 .sname{font-weight:700; font-size:17px;}
+  .flow6 .sdesc{color:var(--gray); font-size:14px;}
+
+  .stack .lv{display:grid; grid-template-columns:44px 1fr auto; gap:18px; align-items:baseline; padding:9px 0; border-bottom:1px solid var(--line);}
+  .inv .stack .lv{border-color:#333;}
+  .stack .r{font-family:var(--serif); font-weight:700; font-size:24px; color:var(--muted);}
+  .stack .en{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); padding-top:2px;}
+
+  .words{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; max-width:980px; margin:0 auto;}
+  .words .chip{font-size:15.5px; padding:9px 18px; margin:0; font-weight:600;}
+
+  .promptbox{
+    border:1.5px solid var(--ink); background:var(--soft); padding:28px 34px; max-width:960px;
+    font-family:Consolas, "Cascadia Mono", monospace; font-size:17.5px; line-height:1.75; white-space:pre-wrap;
+  }
+  .inv .promptbox{border-color:#ddd; background:#191919; color:#e9e9e9;}
+
+  .edpipe{display:grid; grid-template-columns:1fr auto 1fr auto 1fr auto 1fr auto 1fr auto 1fr; gap:6px; align-items:center; margin-bottom:26px;}
+  .edpipe .cell{border-bottom:3px solid #000; padding:8px 4px 12px; text-align:center;}
+  .inv .edpipe .cell{border-color:#fff;}
+  .edpipe .c{font-family:var(--serif); font-weight:700; font-size:19px; line-height:1.25;}
+
+  .six .card{padding:22px 18px 16px;}
+  .six .nm{font-family:var(--serif); font-weight:700; font-size:30px; margin-bottom:6px;}
+
+  .close .big-q{font-size:58px; line-height:1.25;}
+
+  .imgbox{width:100%;}
+  .ph-cover{height:370px;}
+  .ph-med{height:230px;}
+  .ph-tall{height:520px;}
+
+  /* ---------- print ---------- */
+  @media print{
+    body{background:#fff; overflow:visible;}
+    #bar,#imgmenu{display:none !important;}
+    #stage{position:static; display:block;}
+    #deck{transform:none !important;}
+    .slide{page-break-after:always; box-shadow:none; print-color-adjust:exact; -webkit-print-color-adjust:exact;}
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="deck">
+
+    <!-- 01 - bìa -->
+    <section class="slide cover">
+      <div class="s-in">
+        <div class="top">
+          <span data-edit>Buổi chia sẻ</span>
+          <span data-edit>100 phút</span>
+        </div>
+        <div class="mid">
+          <div class="cover-grid">
+            <div>
+              <div class="sub" style="margin-bottom:18px; letter-spacing:.05em;" data-edit>Content Framework - ChatGPT Pro</div>
+              <h1 data-edit>Dùng ChatGPT Pro<br>để xây content<br>có chất lượng</h1>
+              <div class="rule" style="width:180px; margin:26px 0;"></div>
+              <p class="sub" style="font-size:16.5px;" data-edit>Không dạy thao tác công cụ. Bạn mang về framework, từ khóa và chuẩn tự đánh giá để tự phân tích content AI, tự research có kiểm chứng, tự xây hệ thống viết ổn định.</p>
+            </div>
+            <figure class="ph ph-cover" data-note="Ảnh bìa minh họa, đen trắng">
+              <span class="lbl" data-edit>Ảnh bìa<br>(bấm để dán ảnh)</span>
+            </figure>
+          </div>
+        </div>
+        <div class="bottom">
+          <span data-edit>ChatGPT Pro Content Framework</span>
+          <span class="n"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 - chương trình -->
+    <section class="slide">
+      <div class="s-in">
+        <div class="top"><span data-edit>Chương trình</span><span data-edit>5 phần</span></div>
+        <div class="mid">
+          <h2 style="margin-bottom:22px;" data-edit>Trong 100 phút này</h2>
+          <div class="rows agenda-table">
+            <div class="row"><span class="num">01</span><span class="pn" data-edit>Từ Prompt đến System</span><span class="tm" data-edit>15 phút</span><span class="out" data-edit>Mô hình 3 cấp độ dùng AI</span></div>
+            <div class="row"><span class="num">02</span><span class="pn" data-edit>AI Content Operating System</span><span class="tm" data-edit>20 phút</span><span class="out" data-edit>Bốn lớp tạo content ổn định</span></div>
+            <div class="row"><span class="num">03</span><span class="pn" data-edit>E-E-A-T + People-first</span><span class="tm" data-edit>25 phút</span><span class="out" data-edit>Rubric đánh giá content AI</span></div>
+            <div class="row"><span class="num">04</span><span class="pn" data-edit>AI research có kiểm chứng</span><span class="tm" data-edit>25 phút</span><span class="out" data-edit>Workflow research 6 bước</span></div>
+            <div class="row"><span class="num">05</span><span class="pn" data-edit>Slide editable + tổng kết</span><span class="tm" data-edit>15 phút</span><span class="out" data-edit>Cách nhìn deck như một lập luận</span></div>
+            <div class="row total"><span class="num">+</span><span data-edit>Tổng</span><span data-edit>100 phút</span><span class="out" data-edit>Thiên về tư duy, có thể sửa ngay trên slide</span></div>
+          </div>
+        </div>
+        <div class="bottom"><span data-edit>Chương trình</span><span class="n"></span></div>
+      </div>
+    </section>
+
+    <!-- 03 - ba cấp độ -->
+    <section class="slide">
+      <div class="s-in">
+        <div class="top"><span data-edit>Phần 1 - Từ Prompt đến System</span><span data-edit>15 phút</span></div>
+        <div class="mid">
+          <h2 style="margin-bottom:10px;" data-edit>Ba cấp độ dùng AI</h2>
+          <p class="note" style="margin-bottom:18px;" data-edit>Mỗi cấp độ trả lời một câu hỏi khác nhau. Phần lớn mọi người dừng ở cấp 1.</p>
+          <div class="rows levels">
+            <div class="row">
+              <span class="lvl"><b>Cấp 1</b>Prompt</span>
+              <span class="claim" data-edit>"Hỏi một lần, nhận một lần."</span>
+              <span class="why" data-edit>Câu lệnh rõ thì câu trả lời tạm dùng. Nhưng mỗi lần hỏi lại bắt đầu từ đầu.</span>
+            </div>
+            <div class="row">
+              <span class="lvl"><b>Cấp 2</b>Context</span>
+              <span class="claim" data-edit>"AI hiểu thương hiệu, người đọc và mục tiêu."</span>
+              <span class="why" data-edit>Cùng một câu hỏi, bối cảnh khác nhau cho câu trả lời khác nhau về chất lượng.</span>
+            </div>
+            <div class="row">
+              <span class="lvl"><b>Cấp 3</b>System</span>
+              <span class="claim" data-edit>"AI làm theo quy trình, tiêu chuẩn và tài sản tích lũy."</span>
+              <span class="why" data-edit>Chất lượng không còn phụ thuộc may rủi của từng lần hỏi.</span>
+            </div>
+          </div>
+        </div>
+        <div class="bottom"><span data-edit>Phần 1</span><span class="n"></span></div>
+      </div>
+    </section>
+
+    <!-- 04 - thông điệp trung tâm -->
+    <section class="slide inv">
+      <div class="s-in">
+        <div class="top"><span data-edit>Thông điệp trung tâm</span><span data-edit>1 câu nhớ cả buổi</span></div>
+        <div class="mid">
+          <p class="num-xl" data-edit>Prompt - Context - System</p>
+          <div style="margin-top:14px;">
+            <p class="big-q" style="font-size:47px; line-height:1.4;" data-edit>
+              Prompt cho AI câu lệnh.<br>
+              Context cho AI sự thấu hiểu.<br>
+              System cho AI cách làm ổn định.
+            </p>
+          </div>
+          <div class="rule" style="width:220px; margin:30px 0 0; background:#444;"></div>
+          <p class="note" style="margin-top:16px; max-width:760px;" data-edit>Ba câu này là trục của cả buổi: cấp 1 là prompt, cấp 2 là context, cấp 3 là system.</p>
+        </div>
+        <div class="bottom"><span data-edit>Phần 1</span><span class="n"></span></div>
+      </div>
+    </section>
+
+    <!-- 05 - chẩn đoán -->
+    <section class="slide">
+      <div class="s-in">
+        <div class="top"><span data-edit>Phần 1 - Từ Prompt đến System</span><span data-edit>15 phút</span></div>
+        <div class="mid">
+          <h2 style="font-size:44px; margin-bottom:22px;" data-edit>Chẩn đoán: vấn đề của bạn nằm ở đâu?</h2>
+          <div class="grid3 diag">
+            <div class="card">
+              <div class="lvl" data-edit>Prompt</div>
+              <p class="dau" data-edit>Dấu hiệu: trả lời đúng hướng nhưng nông, sai chi tiết, thiếu ý.</p>
+              <p class="hoi" data-edit>Mình đã hỏi đủ rõ, đủ hẹp chưa?</p>
+            </div>
+            <div class="card">
+              <div class="lvl" data-edit>Context</div>
+              <p class="dau" data-edit>Dấu hiệu: viết chung chung, lệch giọng, không đúng người đọc.</p>
+              <p class="hoi" data-edit>AI có hiểu thương hiệu, người đọc và mục tiêu không?</p>
+            </div>
+            <div class="card">
+              <div class="lvl" data-edit>System</div>
+              <p class="dau" data-edit>Dấu hiệu: mỗi lần hỏi ra một kiểu, chất lượng thất thường.</p>
+              <p class="hoi" data-edit>Quy trình, chuẩn mực đã được lưu lại chưa?</p>
+            </div>
+          </div>
+          <div style="margin-top:26px; border-top:1.5px solid #000; padding-top:14px;">
+            <p style="font-family:var(--serif); font-style:italic; font-size:20px;" data-edit>Nếu bạn lặp lại việc này 20 lần - thứ gì đáng được lưu lại, thay vì hỏi lại từ đầu?</p>
+          </div>
+        </div>
+        <div class="bottom"><span data-edit>Phần 1</span><span class="n"></span></div>
+      </div>
+    </section>
+
+    <!-- 06 - OS bốn lớp -->
+    <section class="slide">
+      <div class="s-in">
+        <div class="top"><span data-edit>Phần 2 - AI Content Operating System</span><span data-edit>20 phút</span></div>
+        <div class="mid">
+          <h2 style="font-size:46px; margin-bottom:34px;" data-edit>Bốn lớp tạo content ổn định</h2>
+          <div class="osloop">
+            <div class="cell"><div class="c" data-edit>Context</div><div class="q" data-edit>AI cần hiểu gì trước khi viết?</div></div>
+            <span class="arrow">&#8594;</span>
+            <div class="cell"><div class="c" data-edit>Standards</div><div class="q" data-edit>Một output tốt trông như thế nào?</div></div>
+            <span class="arrow">&#8594;</span>
+            <div class="cell"><div class="c" data-edit>Workflow</div><div class="q" data-edit>Làm theo trình tự nào, duyệt ở đâu?</div></div>
+            <span class="arrow">&#8594;</span>
+            <div class="cell"><div class="c" data-edit>Assets</div><div class="q" data-edit>Điều gì tích lũy để tái dùng?</div></div>
+          </div>
+          <div class="grid4" style="margin-top:30px;">
+            <div class="card solid"><p data-edit>Context nuôi Standards: hiểu đúng mới chấm đúng.</p></div>
+            <div class="card solid"><p data-edit>Standards nuôi Workflow: có chuẩn mới duyệt được.</p></div>
+            <div class="card solid"><p data-edit>Workflow nuôi Assets: làm nhiều lần mới biết cái gì đáng lưu.</p></div>
+            <div class="card solid"><p data-edit>Assets quay lại nuôi Context: vòng tròn tự cải thiện.</p></div>
+          </div>
+        </div>
+        <div class="bottom"><span data-edit>Phần 2</span><span class="n"></span></div>
+      </div>
+    </section>
+
+    <!-- 07 - bảng chi tiết bốn lớp -->
+    <section class="slide">
+      <div class="s-in">
+        <div class="top"><span data-edit>Phần 2 - AI Content Operating System</span><span data-edit>20 phút</span></div>
+        <div class="mid">
+          <h2 style="font-size:42px; margin-bottom:16px;" data-edit>Mỗi lớp chứa gì?</h2>
+          <div class="rows ostable">
+            <div class="row">
+              <span class="lay" data-edit>Context<span>AI hiểu gì trước khi viết</span></span>
+              <span><span class="chip soft" data-edit>Brand voice</span><span class="chip soft" data-edit>Audience</span><span class="chip soft" data-edit>Positioning</span><span class="chip soft" data-edit>Offer</span><span class="chip soft" data-edit>Proof</span></span>
+            </div>
+            <div class="row">
+              <span class="lay" data-edit>Standards<span>Một output tốt trông ra sao</span></span>
+              <span><span class="chip soft" data-edit>Quality bar</span><span class="chip soft" data-edit>Writing guide</span><span class="chip soft" data-edit>Checklist</span><span class="chip soft" data-edit>Anti-pattern</span></span>
+            </div>
+            <div class="row">
+              <span class="lay" data-edit>Workflow<span>Trình tự làm và chỗ duyệt</span></span>
+              <span><span class="chip soft" data-edit>Brief</span><span class="chip soft" data-edit>Outline</span><span class="chip soft" data-edit>Research</span><span class="chip soft" data-edit>Draft</span><span class="chip soft" data-edit>Review</span><span class="chip soft" data-edit>Approval</span></span>
+            </div>
+            <div class="row">
+              <span class="lay" data-edit>Assets<span>Thứ tích lũy để tái dùng</span></span>
+              <span><span class="chip soft" data-edit>Workspace</span><span class="chip soft" data-edit>Markdown</span><span class="chip soft" data-edit>Template</span><span class="chip soft" data-edit>Prompt library</span><span class="chip soft" data-edit>Skill</span></span>
+            </div>
+          </div>
+        </div>
+        <div class="bottom"><span data-edit>Phần 2</span><span class="n"></span></div>
+      </div>
+    </section>
+
+    <!-- 08 - khái niệm nền -->
+    <section class="slide">
+      <div class="s-in">
+        <div class="top"><span data-edit>Phần 2 - AI Content Operating System</span><span data-edit>20 phút</span></div>
+        <div class="mid">
+          <h2 style="font-size:42px; margin-bottom:24px;" data-edit>Bốn khái niệm nền để nói về System</h2>
+          <div class="grid2" style="grid-template-columns:1fr 1.15fr 1.35fr;">
+            <div class="card">
+              <div class="k" data-edit>Thuật ngữ 1</div>
+              <div class="t" data-edit>Workspace</div>
+              <p data-edit>Văn phòng số: mọi file AI cần đều nằm một nơi, đúng chỗ, đúng tên.</p>
+            </div>
+            <div class="card">
+              <div class="k" data-edit>Thuật ngữ 2</div>
+              <div class="t" data-edit>File Markdown</div>
+              <p data-edit>Nơi lưu context và quy tắc - dạng văn bản thuần, AI đọc được trực tiếp.</p>
+            </div>
+            <div class="card">
+              <div class="k" data-edit>Thuật ngữ 3</div>
+              <div class="t" data-edit>Source of truth</div>
+              <p data-edit>Một nguồn chuẩn duy nhất. Nhiều bản sao lệch nhau là nguồn gốc của sai sót.</p>
+            </div>
+            <div class="card">
+              <div class="k" data-edit>Thuật ngữ 4</div>
+              <div class="t" data-edit>Skill</div>
+              <p data-edit>SOP đóng gói cho AI. Chỉ làm khi workflow đã chạy ổn định, không làm sớm.</p>
+            </div>
+            <div class="card solid" style="grid-column:span 2;">
+              <p style="font-size:15px;" data-edit>Đọc theo chiều: Workspace chứa File Markdown, File Markdown là Source of truth cho AI, và khi mọi thứ chín thì gói lại thành Skill.</p>
+            </div>
+          </div>
+        </div>
+        <div class="bottom"><span data-edit>Phần 2</span><span class="n"></span></div>
+      </div>
+    </section>
+
+    <!-- 09 - nói đúng về E-E-A-T -->
+    <section class="slide">
+      <div class="s-in">
+        <div class="top"><span data-edit>Phần 3 - E-E-A-T + People-first</span><span data-edit>25 phút</span></div>
+        <div class="mid">
+          <div class="grid2" style="grid-template-columns:1.5fr 1fr; gap:44px; align-items:center;">
+            <div>
+              <h2 style="font-size:46px; margin-bottom:18px;" data-edit>Nói đúng về E-E-A-T</h2>
+              <div class="rows" style="gap:0;">
+                <div class="row" style="grid-template-columns:auto 1fr; gap:16px; border:0; padding:7px 0;">
+                  <span class="num-xl" style="font-size:30px;" data-edit>01</span>
+                  <span data-edit>Không phải "một điểm SEO" hay ranking factor độc lập mà Google chấm.</span>
+                </div>
+                <div class="row" style="grid-template-columns:auto 1fr; gap:16px; border:0; padding:7px 0;">
+                  <span class="num-xl" style="font-size:30px;" data-edit>02</span>
+                  <span data-edit>Google dùng nhiều tín hiệu để nhận diện nội dung hữu ích - Trust là thành tố quan trọng nhất.</span>
+                </div>
+                <div class="row" style="grid-template-columns:auto 1fr; gap:16px; border:0; padding:7px 0;">
+                  <span class="num-xl" style="font-size:30px;" data-edit>03</span>
+                  <span data-edit>Chủ đề YMYL (sức khỏe, tài chính, an toàn) đòi tiêu chuẩn tin cậy cao hơn hẳn.</span>
+                </div>
+                <div class="row" style="grid-template-columns:auto 1fr; gap:16px; border:0; padding:7px 0;">
+                  <span class="num-xl" style="font-size:30px;" data-edit>04</span>
+                  <span data-edit>Cách dùng tốt nhất: làm lăng kính tự chấm content của chính bạn.</span>
+                </div>
+              </div>
+            </div>
+            <div>
+              <figure class="ph ph-med" data-note="Minh họa E-E-A-T như thấu kính soi content, đen trắng">
+                <span class="lbl" data-edit>E-E-A-T như một lăng kính<br>(bấm để dán ảnh)</span>
+              </figure>
+              <div style="margin-top:14px; text-align:center;">
+                <span class="chip" data-edit>Experience</span>
+                <span class="chip" data-edit>Expertise</span>
+                <span class="chip" data-edit>Authoritativeness</span>
+                <span class="chip" data-edit>Trust</span>
+                <span class="chip soft" data-edit>+ Helpfulness</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bottom"><span data-edit>Phần 3</span><span class="n"></span></div>
+      </div>
+    </section>
+
+    <!-- 10 - rubric 5 thành tố -->
+    <section class="slide">
+      <div class="s-in">
+        <div class="top"><span data-edit>Phần 3 - Rubric tự chấm content</span><span data-edit>25 phút</span></div>
+        <div class="mid">
+          <div class="rubric-table">
+            <div class="row" style="grid-template-columns:64px 230px 1.25fr 1.35fr; border-bottom:1.5px solid #000; padding-bottom:6px;">
+              <span></span><span class="note" style="letter-spacing:.14em;" data-edit>Thành tố</span>
+              <span class="note" style="letter-spacing:.14em;" data-edit>Câu hỏi soi content AI</span>
+              <span class="note" style="letter-spacing:.14em;" data-edit>Dấu hiệu nên thêm</span>
+            </div>
+            <div class="row">
+              <span class="lt" data-edit>E</span><span class="comp" data-edit>Experience</span>
+              <span class="q" data-edit>Người viết đã làm, dùng hoặc đo lường việc này chưa?</span>
+              <span class="sig" data-edit>Câu chuyện thật, quy trình thật, bài học phải trả giá.</span>
+            </div>
+            <div class="row">
+              <span class="lt" data-edit>E</span><span class="comp" data-edit>Expertise</span>
+              <span class="q" data-edit>Lập luận có đúng bản chất nghề không?</span>
+              <span class="sig" data-edit>Cơ chế, trade-off, giới hạn áp dụng.</span>
+            </div>
+            <div class="row">
+              <span class="lt" data-edit>A</span><span class="comp" data-edit>Authoritativeness</span>
+              <span class="q" data-edit>Vì sao nguồn này đáng được lắng nghe?</span>
+              <span class="sig" data-edit>Case, thành tích kiểm được, nguồn gốc rõ ràng.</span>
+            </div>
+            <div class="row">
+              <span class="lt" data-edit>T</span><span class="comp" data-edit>Trust</span>
+              <span class="q" data-edit>Người đọc kiểm tra được điều gì?</span>
+              <span class="sig" data-edit>Link nguồn, ngày dữ liệu, tách fact / opinion.</span>
+            </div>
+            <div class="row">
+              <span class="lt" data-edit>H</span><span class="comp" data-edit>Helpfulness</span>
+              <span class="q" data-edit>Có giúp đúng người giải quyết đúng việc không?</span>
+              <span class="sig" data-edit>Bối cảnh, quyết định và bước tiếp theo rõ.</span>
+            </div>
+          </div>
+        </div>
+        <div class="bottom"><span data-edit>Phần 3</span><span class="n"></span></div>
+      </div>
+    </section>
+
+    <!-- 11 - công thức -->
+    <section class="slide inv">
+      <div class="s-in">
+        <div class="top"><span data-edit>Phần 3 - Một công thức nhớ</span><span data-edit>25 phút</span></div>
+        <div class="mid" style="align-items:flex-start;">
+          <p class="note" style="letter-spacing:.2em; margin-bottom:14px;" data-edit>Content bền</p>
+          <p class="big-q" style="font-size:60px; line-height:1.35;" data-edit>
+            Hữu ích &times; Trải nghiệm &times;<br>
+            Chuyên môn &times; Độ tin cậy
+          </p>
+          <div class="rule" style="width:260px; margin:26px 0; background:#444;"></div>
+          <p class="sub" style="font-size:19px; max-width:860px;" data-edit>Nhân, không phải cộng. Thiếu một thành tố, kết quả về 0 - dù bốn thứ còn lại có tốt đến đâu.</p>
+        </div>
+        <div class="bottom"><span data-edit>Phần 3</span><span class="n"></span></div>
+      </div>
+    </section>
+
+    <!-- 12 - people-first -->
+    <section class="slide">
+      <div class="s-in">
+        <div class="top"><span data-edit>Phần 3 - People-first</span><span data-edit>25 phút</span></div>
+        <div class="mid">
+          <h2 style="font-size:42px; margin-bottom:26px;" data-edit>Ba câu hỏi people-first của Google</h2>
+          <div class="grid3 pf">
+            <div class="card">
+              <div class="who" data-edit>WHO?</div>
+              <p class="whofull" data-edit>Ai tạo ra nội dung này? Có phải người thực sự biết về chủ đề?</p>
+            </div>
+            <div class="card">
+              <div class="who" data-edit>HOW?</div>
+              <p class="whofull" data-edit>Nội dung được tạo ra như thế nào? Có công sức, có quy trình không?</p>
+            </div>
+            <div class="card">
+              <div class="who" data-edit>WHY?</div>
+              <p class="whofull" data-edit>Vì sao nội dung này tồn tại? Phục vụ người đọc hay phục vụ thứ hạng?</p>
+            </div>
+          </div>
+          <p style="margin-top:28px; border-top:1px solid var(--line); padding-top:14px;" class="sub" data-edit>Trả lời được ba câu này, content AI không còn là "nội dung tự sinh" vô danh - nó có người đứng sau, có cách làm và có lý do tồn tại.</p>
+        </div>
+        <div class="bottom"><span data-edit>Phần 3</span><span class="n"></span></div>
+      </div>
+    </section>
+
+    <!-- 13 - AI không làm thay kết luận -->
+    <section class="slide inv">
+      <div class="s-in">
+        <div class="top"><span data-edit>Phần 4 - Research có kiểm chứng</span><span data-edit>25 phút</span></div>
+        <div class="mid">
+          <h2 style="font-size:58px; margin-bottom:30px;" data-edit>AI không làm thay kết luận</h2>
+          <div class="res-role">
+            <div class="col">
+              <b data-edit>AI lo phần nặng - lặp lại</b>
+              <ul>
+                <li data-edit>Chia nhỏ vấn đề thành nhánh cần chứng minh</li>
+                <li data-edit>Tìm nguồn và xếp thứ tự ưu tiên</li>
+                <li data-edit>Trích xuất claim + evidence + bối cảnh</li>
+                <li data-edit>Đối chiếu các nguồn với nhau</li>
+                <li data-edit>Tạo research brief cho con người</li>
+              </ul>
+            </div>
+            <div class="col">
+              <b data-edit>Con người giữ phần quyết định</b>
+              <ul>
+                <li data-edit>Kiểm chứng claim quan trọng</li>
+                <li data-edit>Chịu trách nhiệm kết luận</li>
+                <li data-edit>Chọn editorial angle cho bài viết</li>
+              </ul>
+              <div class="rule" style="background:#444; margin:18px 0;"></div>
+              <p style="color:#b9b9b9; font-size:15px;" data-edit>AI sai số liệu không ai chịu trách nhiệm. Bạn sai số liệu thì bài của bạn mất tin.</p>
+            </div>
+          </div>
+        </div>
+        <div class="bottom"><span data-edit>Phần 4</span><span class="n"></span></div>
+      </div>
+    </section>
+
+    <!-- 14 - workflow 6 bước -->
+    <section class="slide">
+      <div class="s-in">
+        <div class="top"><span data-edit>Phần 4 - Workflow research 6 bước</span><span data-edit>25 phút</span></div>
+        <div class="mid">
+          <h2 style="font-size:38px; margin-bottom:8px;" data-edit>Workflow research 6 bước</h2>
+          <p class="note" style="margin-bottom:12px;" data-edit>Bước nào cũng có thể nhờ AI - trừ bước cuối cùng.</p>
+          <div class="flow6">
+            <div class="step"><span class="snum">1</span><span class="sname" data-edit>Question</span><span class="sdesc" data-edit>Đóng khung câu hỏi đủ hẹp để trả lời xong là ra quyết định được.</span></div>
+            <div class="step"><span class="snum">2</span><span class="sname" data-edit>Research map</span><span class="sdesc" data-edit>Tách nhánh: dữ liệu, cơ chế, case, phản biện, hệ quả.</span></div>
+            <div class="step"><span class="snum">3</span><span class="sname" data-edit>Source stack</span><span class="sdesc" data-edit>Xếp nguồn theo độ tin cậy, lấy nguồn tốt nhất trước.</span></div>
+            <div class="step"><span class="snum">4</span><span class="sname" data-edit>Extract</span><span class="sdesc" data-edit>Lấy claim, evidence, bối cảnh, ngày, giới hạn - không bê văn.</span></div>
+            <div class="step"><span class="snum">5</span><span class="sname" data-edit>Verify</span><span class="sdesc" data-edit>Claim quan trọng phải có nguồn gốc hoặc nguồn độc lập đối chiếu; gắn nhãn Fact / Inference / Opinion.</span></div>
+            <div class="step"><span class="snum">6</span><span class="sname" data-edit>Synthesize</span><span class="sdesc" data-edit>AI lập bảng đồng thuận và mâu thuẫn; con người chốt editorial angle.</span></div>
+          </div>
+        </div>
+        <div class="bottom"><span data-edit>Phần 4</span><span class="n"></span></div>
+      </div>
+    </section>
+
+    <!-- 15 - source stack -->
+    <section class="slide">
+      <div class="s-in">
+        <div class="top"><span data-edit>Phần 4 - Research có kiểm chứng</span><span data-edit>25 phút</span></div>
+        <div class="mid">
+          <div class="grid2" style="grid-template-columns:1.55fr 1fr; gap:44px; align-items:center;">
+            <div>
+              <h2 style="font-size:40px; margin-bottom:16px;" data-edit>Độ tin cậy của nguồn</h2>
+              <div class="stack">
+                <div class="lv"><span class="r" data-edit>1</span><span data-edit><b>Primary source</b> - tài liệu gốc từ đơn vị ban hành</span><span class="en" data-edit>ưu tiên nhất</span></div>
+                <div class="lv"><span class="r" data-edit>2</span><span data-edit><b>Tài liệu chuyên môn</b> - giáo trình, hướng dẫn chuẩn ngành</span><span class="en" data-edit></span></div>
+                <div class="lv"><span class="r" data-edit>3</span><span data-edit><b>Báo cáo / nghiên cứu</b> - có phương pháp, ngày, phạm vi</span><span class="en" data-edit></span></div>
+                <div class="lv"><span class="r" data-edit>4</span><span data-edit><b>Case thực tế</b> - chuyện đã xảy ra, kiểm chứng được</span><span class="en" data-edit></span></div>
+                <div class="lv" style="border-bottom:0;"><span class="r" data-edit>5</span><span data-edit><b>Opinion tham khảo</b> - quan điểm cá nhân, ghi rõ tên người nói</span><span class="en" data-edit>cuối cùng</span></div>
+              </div>
+            </div>
+            <div>
+              <div class="card solid" style="border-left:4px solid #000;">
+                <div class="k" data-edit>Luật verify</div>
+                <p style="font-size:15.5px; color:var(--ink);" data-edit>Claim quan trọng phải có nguồn gốc rõ ràng, hoặc ít nhất 2 nguồn độc lập cùng xác nhận (corroboration).</p>
+              </div>
+              <figure class="ph ph-med" style="margin-top:18px;" data-note="Minh họa tháp nguồn tin cậy, đen trắng">
+                <span class="lbl" data-edit>Tháp nguồn<br>(bấm để dán ảnh)</span>
+              </figure>
+            </div>
+          </div>
+        </div>
+        <div class="bottom"><span data-edit>Phần 4</span><span class="n"></span></div>
+      </div>
+    </section>
+
+    <!-- 16 - từ khóa -->
+    <section class="slide">
+      <div class="s-in">
+        <div class="top"><span data-edit>Phần 4 - Research có kiểm chứng</span><span data-edit>25 phút</span></div>
+        <div class="mid" style="align-items:center; text-align:center;">
+          <h2 style="font-size:42px; margin-bottom:26px;" data-edit>Từ khóa để nói chuyện với AI</h2>
+          <div class="words">
+            <span class="chip" data-edit>Claim</span>
+            <span class="chip" data-edit>Evidence</span>
+            <span class="chip" data-edit>Primary source</span>
+            <span class="chip" data-edit>Corroboration</span>
+            <span class="chip" data-edit>Recency</span>
+            <span class="chip" data-edit>Applicability</span>
+            <span class="chip" data-edit>Fact / Inference / Opinion</span>
+            <span class="chip" data-edit>Citation trail</span>
+            <span class="chip soft" data-edit>+ Research map</span>
+            <span class="chip soft" data-edit>+ Source stack</span>
+            <span class="chip soft" data-edit>+ Editorial angle</span>
+          </div>
+          <p class="sub" style="max-width:780px; margin:30px auto 0;" data-edit>Dùng đúng các từ này trong yêu cầu, AI có ngôn ngữ chung để phân biệt bằng chứng với suy đoán - thay vì trả lời trơn tru nhưng không có căn cứ.</p>
+        </div>
+        <div class="bottom"><span data-edit>Phần 4</span><span class="n"></span></div>
+      </div>
+    </section>
+
+    <!-- 17 - prompt demo -->
+    <section class="slide">
+      <div class="s-in">
+        <div class="top"><span data-edit>Phần 4 - Prompt mẫu</span><span data-edit>25 phút</span></div>
+        <div class="mid" style="align-items:center;">
+          <h2 style="font-size:34px; margin-bottom:20px; align-self:flex-start;" data-edit>Một prompt research mẫu - copy và chỉnh</h2>
+          <div class="promptbox" data-edit>Tôi cần research cho câu hỏi: [câu hỏi].
+
+Hãy lập research map gồm các nhánh cần chứng minh; mỗi nhánh nêu loại nguồn ưu tiên, từ khóa tìm kiếm và rủi ro suy luận sai.
+
+Chưa kết luận, không bịa số liệu.</div>
+          <p class="note" style="margin-top:18px; align-self:flex-start;" data-edit>Chú ý hai ràng buộc cuối: "chưa kết luận" giữ AI ở vai trợ lý research, "không bịa số liệu" chặn thói quen bịa nguồn của AI.</p>
+        </div>
+        <div class="bottom"><span data-edit>Phần 4</span><span class="n"></span></div>
+      </div>
+    </section>
+
+    <!-- 18 - slide là lập luận -->
+    <section class="slide">
+      <div class="s-in">
+        <div class="top"><span data-edit>Phần 5 - Slide editable</span><span data-edit>15 phút</span></div>
+        <div class="mid">
+          <h2 style="font-size:46px; margin-bottom:8px;" data-edit>Cách nhìn deck như một lập luận</h2>
+          <p class="note" style="margin-bottom:30px;" data-edit>Không phải "trình bày đẹp" - mà là sắp xếp ý để người nghe đi từ A đến B.</p>
+          <div class="edpipe">
+            <div class="cell"><div class="c" data-edit>Idea</div></div>
+            <span class="arrow" style="font-size:20px;">&#8594;</span>
+            <div class="cell"><div class="c" data-edit>Storyline</div></div>
+            <span class="arrow" style="font-size:20px;">&#8594;</span>
+            <div class="cell"><div class="c" data-edit>Slide logic</div></div>
+            <span class="arrow" style="font-size:20px;">&#8594;</span>
+            <div class="cell"><div class="c" data-edit>Layout</div></div>
+            <span class="arrow" style="font-size:20px;">&#8594;</span>
+            <div class="cell"><div class="c" data-edit>Visual</div></div>
+            <span class="arrow" style="font-size:20px;">&#8594;</span>
+            <div class="cell"><div class="c" data-edit>Editable deck</div></div>
+          </div>
+          <div class="grid2" style="grid-template-columns:1fr 1fr; margin-top:26px;">
+            <div class="card solid"><p style="font-size:17px; color:var(--ink);" data-edit><b>Slide là lập luận, không phải trang trí.</b> Mỗi slide phải làm một việc duy nhất.</p></div>
+            <div class="card solid"><p style="font-size:17px; color:var(--ink);" data-edit><b>One slide, one job.</b> Nếu một slide phải làm hai việc - tách nó ra.</p></div>
+          </div>
+        </div>
+        <div class="bottom"><span data-edit>Phần 5</span><span class="n"></span></div>
+      </div>
+    </section>
+
+    <!-- 19 - sáu loại slide -->
+    <section class="slide">
+      <div class="s-in">
+        <div class="top"><span data-edit>Phần 5 - Slide editable</span><span data-edit>15 phút</span></div>
+        <div class="mid">
+          <h2 style="font-size:40px; margin-bottom:24px;" data-edit>Sáu loại slide - ráp mọi nội dung</h2>
+          <div class="grid3 six">
+            <div class="card"><div class="nm" data-edit>Hook</div><p data-edit>Kéo người nghe vào trong 30 giây đầu.</p></div>
+            <div class="card"><div class="nm" data-edit>Problem</div><p data-edit>Nỗi đau hoặc việc đang dở mà họ nhận ra.</p></div>
+            <div class="card"><div class="nm" data-edit>Insight</div><p data-edit>Phát hiện làm đổi cách nhìn vấn đề.</p></div>
+            <div class="card"><div class="nm" data-edit>Framework</div><p data-edit>Mô hình để người nghe mang về áp dụng.</p></div>
+            <div class="card"><div class="nm" data-edit>Proof</div><p data-edit>Bằng chứng, case, số liệu kiểm chứng được.</p></div>
+            <div class="card"><div class="nm" data-edit>Action</div><p data-edit>Bước cụ thể làm ngay sau buổi.</p></div>
+          </div>
+          <p style="margin-top:22px; text-align:center;" class="note" data-edit>Bài chia sẻ hôm nay cũng được ráp từ đúng sáu loại này.</p>
+        </div>
+        <div class="bottom"><span data-edit>Phần 5</span><span class="n"></span></div>
+      </div>
+    </section>
+
+    <!-- 20 - deck làm việc được -->
+    <section class="slide">
+      <div class="s-in">
+        <div class="top"><span data-edit>Phần 5 - Slide editable</span><span data-edit>15 phút</span></div>
+        <div class="mid">
+          <h2 style="font-size:44px; margin-bottom:24px;" data-edit>Deck làm việc được, không chỉ trình chiếu</h2>
+          <div class="grid2" style="grid-template-columns:1.3fr 1fr; gap:40px; align-items:center;">
+            <div class="rows">
+              <div class="row" style="grid-template-columns:auto 1fr; gap:16px; border:0; padding:8px 0;">
+                <span class="num-xl" style="font-size:26px;" data-edit>01</span>
+                <span data-edit>Text, bảng, chart, shape phải sửa được trực tiếp - ảnh chỉ là ảnh minh họa.</span>
+              </div>
+              <div class="row" style="grid-template-columns:auto 1fr; gap:16px; border:0; padding:8px 0;">
+                <span class="num-xl" style="font-size:26px;" data-edit>02</span>
+                <span data-edit>AI làm bản nháp; con người chịu trách nhiệm lập luận, số liệu và quyết định cuối.</span>
+              </div>
+              <div class="row" style="grid-template-columns:auto 1fr; gap:16px; border:0; padding:8px 0;">
+                <span class="num-xl" style="font-size:26px;" data-edit>03</span>
+                <span data-edit>Deck này: bấm "Sửa văn bản" để chỉnh chữ ngay trên slide, "Lưu file đã sửa" để xuất bản mới.</span>
+              </div>
+              <div class="row" style="grid-template-columns:auto 1fr; gap:16px; border:0; padding:8px 0;">
+                <span class="num-xl" style="font-size:26px;" data-edit>04</span>
+                <span data-edit>Placeholder ảnh: bấm vào khung để tải ảnh lên hoặc dán đường dẫn.</span>
+              </div>
+            </div>
+            <figure class="ph ph-tall" data-note="Minh họa: bản nháp AI - con người duyệt, đen trắng">
+              <span class="lbl" data-edit>Bản nháp AI<br>con người duyệt<br>(bấm để dán ảnh)</span>
+            </figure>
+          </div>
+        </div>
+        <div class="bottom"><span data-edit>Phần 5</span><span class="n"></span></div>
+      </div>
+    </section>
+
+    <!-- 21 - tổng kết -->
+    <section class="slide inv">
+      <div class="s-in">
+        <div class="top"><span data-edit>Tổng kết</span><span data-edit>Mang về 3 thứ</span></div>
+        <div class="mid">
+          <div class="grid3" style="gap:34px;">
+            <div>
+              <div class="num-xl" data-edit>01</div>
+              <div class="rule" style="background:#444; margin:14px 0;"></div>
+              <p class="big-q" style="font-size:25px;" data-edit>Ba cấp độ dùng AI</p>
+              <p style="color:#b3b3b3; margin-top:6px; font-size:15px;" data-edit>Prompt - Context - System. Chẩn đoán xem mình đang thiếu tầng nào.</p>
+            </div>
+            <div>
+              <div class="num-xl" data-edit>02</div>
+              <div class="rule" style="background:#444; margin:14px 0;"></div>
+              <p class="big-q" style="font-size:25px;" data-edit>Hệ thống + chuẩn chấm</p>
+              <p style="color:#b3b3b3; margin-top:6px; font-size:15px;" data-edit>Bốn lớp Context - Standards - Workflow - Assets, và rubric E-E-A-T để tự chấm.</p>
+            </div>
+            <div>
+              <div class="num-xl" data-edit>03</div>
+              <div class="rule" style="background:#444; margin:14px 0;"></div>
+              <p class="big-q" style="font-size:25px;" data-edit>Research 6 bước</p>
+              <p style="color:#b3b3b3; margin-top:6px; font-size:15px;" data-edit>Có nguồn, có nhãn Fact / Inference / Opinion, có người chốt kết luận.</p>
+            </div>
+          </div>
+          <p class="big-q" style="font-size:34px; margin-top:44px; border-top:1px solid #333; padding-top:30px;" data-edit>
+            Prompt là câu lệnh. Context là sự thấu hiểu. System là cách làm ổn định.
+          </p>
+        </div>
+        <div class="bottom">
+          <span data-edit>Cảm ơn - thảo luận</span>
+          <span class="n"></span>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<div id="bar">
+  <button id="bPrev" title="Slide trước (mũi tên Trái)">&#8249;</button>
+  <span class="ct" id="counter"></span>
+  <button id="bNext" title="Slide sau (mũi tên Phải)">&#8250;</button>
+  <span style="width:1px;height:16px;background:#3a3a3a;"></span>
+  <button id="bEdit" title="Bật/tắt sửa text (phím E)">Sửa văn bản</button>
+  <button id="bSave" title="Tải về file HTML đã sửa (phím S)">Lưu file đã sửa</button>
+  <button id="bFs" title="Toàn màn hình (phím F)">Toàn màn hình</button>
+</div>
+
+<div id="imgmenu" style="display:none;">
+  <span class="cap" id="imgCap">Ảnh placeholder</span>
+  <button id="mUpload">Tải ảnh lên</button>
+  <button id="mUrl">Nhập đường dẫn ảnh</button>
+  <button id="mRemove">Bỏ ảnh (về placeholder)</button>
+</div>
+<input type="file" id="fileIn" accept="image/*" style="display:none;">
+
+<script>
+(function(){
+  "use strict";
+  var deck = document.getElementById("deck");
+  var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+  var total = slides.length;
+  var cur = 0;
+  var editing = false;
+
+  function fit(){
+    var availW = window.innerWidth;
+    var availH = window.innerHeight - 64; /* chừa thanh công cụ */
+    var s = Math.min(availW / 1280, availH / 720);
+    deck.style.transform = "scale(" + s + ")";
+  }
+
+  function show(i, jump){
+    cur = Math.max(0, Math.min(total - 1, i));
+    slides.forEach(function(sl, idx){
+      sl.style.display = (idx === cur) ? "" : "none";
+    });
+    document.getElementById("counter").textContent = (cur + 1) + " / " + total;
+  }
+
+  function setEdit(on){
+    editing = on;
+    document.body.classList.toggle("editing", on);
+    var btn = document.getElementById("bEdit");
+    btn.classList.toggle("on", on);
+    btn.textContent = on ? "Xong sửa văn bản" : "Sửa văn bản";
+    /* bật/tắt contenteditable cho mọi vùng text */
+    var nodes = document.querySelectorAll("[data-edit]");
+    for (var i = 0; i < nodes.length; i++){
+      if (on) nodes[i].setAttribute("contenteditable", "true");
+      else nodes[i].removeAttribute("contenteditable");
+    }
+  }
+
+  function saveEdited(){
+    /* nhân bản document rồi bỏ contenteditable để file sạch */
+    var html = document.documentElement.outerHTML;
+    var tmp = document.implementation.createHTMLDocument("");
+    tmp.documentElement.innerHTML = html.match(/<body[\s\S]*<\/body>/)[0];
+    var all = tmp.querySelectorAll("[contenteditable]");
+    for (var i = 0; i < all.length; i++) all[i].removeAttribute("contenteditable");
+    var out = "<!DOCTYPE html>\n" + document.documentElement.outerHTML
+      .replace(/<body([^>]*)>[\s\S]*<\/body>/, "<body$1>" + tmp.body.innerHTML + "</body>");
+    var blob = new Blob([out], {type: "text/html;charset=utf-8"});
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "slides-content-framework.html";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 400);
+  }
+
+  /* ---------- ảnh placeholder ---------- */
+  var targetPh = null, fileInput = document.getElementById("fileIn"), imgMenu = document.getElementById("imgmenu");
+
+  function closeMenu(){ imgMenu.style.display = "none"; targetPh = null; }
+  function openMenu(ph, x, y){
+    targetPh = ph;
+    document.getElementById("imgCap").textContent = ph.getAttribute("data-note") || "Ảnh placeholder";
+    imgMenu.style.display = "block";
+    var w = imgMenu.offsetWidth, h = imgMenu.offsetHeight;
+    var left = Math.min(x, window.innerWidth - w - 8);
+    var top = Math.min(y, window.innerHeight - h - 8);
+    imgMenu.style.left = Math.max(8, left) + "px";
+    imgMenu.style.top = Math.max(8, top) + "px";
+  }
+  function setImage(src){
+    if (!targetPh) return;
+    targetPh.innerHTML = "";
+    var im = document.createElement("img");
+    im.src = src;
+    targetPh.classList.add("has-img");
+    targetPh.appendChild(im);
+    closeMenu();
+  }
+  function clearImage(){
+    if (!targetPh) return;
+    targetPh.classList.remove("has-img");
+    targetPh.innerHTML = '<span class="lbl">' + (targetPh.getAttribute("data-note") || "Ảnh") + '<br>(bấm để thay ảnh)</span>';
+    closeMenu();
+  }
+
+  document.addEventListener("click", function(e){
+    var ph = e.target.closest ? e.target.closest("figure.ph") : null;
+    if (ph && editing){
+      e.preventDefault();
+      var r = ph.getBoundingClientRect();
+      openMenu(ph, r.left + 12, r.bottom + 6);
+      return;
+    }
+    if (!imgMenu.contains(e.target)) closeMenu();
+  });
+
+  document.getElementById("mUpload").addEventListener("click", function(){ fileInput.click(); });
+  document.getElementById("mUrl").addEventListener("click", function(){
+    var url = prompt("Dán đường dẫn ảnh (http/https):");
+    if (url) setImage(url);
+  });
+  document.getElementById("mRemove").addEventListener("click", clearImage);
+  fileInput.addEventListener("change", function(){
+    var f = fileInput.files && fileInput.files[0];
+    if (!f) return;
+    var rd = new FileReader();
+    rd.onload = function(){ setImage(rd.result); };
+    rd.readAsDataURL(f);
+    fileInput.value = "";
+  });
+
+  /* ---------- điều hướng ---------- */
+  function next(){ show(cur + 1); }
+  function prev(){ show(cur - 1); }
+
+  document.getElementById("bNext").addEventListener("click", next);
+  document.getElementById("bPrev").addEventListener("click", prev);
+  document.getElementById("bEdit").addEventListener("click", function(){ setEdit(!editing); });
+  document.getElementById("bSave").addEventListener("click", saveEdited);
+  document.getElementById("bFs").addEventListener("click", function(){
+    if (document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen();
+  });
+
+  document.addEventListener("keydown", function(e){
+    var tag = (e.target.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea" || e.target.isContentEditable) return;
+    switch (e.key){
+      case "ArrowRight": case "ArrowDown": case "PageDown": case " ": e.preventDefault(); next(); break;
+      case "ArrowLeft": case "ArrowUp": case "PageUp": e.preventDefault(); prev(); break;
+      case "Home": e.preventDefault(); show(0); break;
+      case "End": e.preventDefault(); show(total - 1); break;
+      case "f": case "F": document.documentElement.requestFullscreen(); break;
+      case "e": case "E": setEdit(!editing); break;
+      case "s": case "S": saveEdited(); break;
+      case "Escape": if (document.fullscreenElement) document.exitFullscreen(); closeMenu(); break;
+    }
+  });
+
+  /* số trang tự đánh */
+  slides.forEach(function(sl, idx){
+    var n = sl.querySelector(".bottom .n");
+    if (n) n.textContent = String(idx + 1).padStart(2, "0") + " / " + total;
+  });
+
+  window.addEventListener("resize", fit);
+  fit();
+  show(0);
+  setEdit(false);
+})();
+</script>
+</body>
+</html>
