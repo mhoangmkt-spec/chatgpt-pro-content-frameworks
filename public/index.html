@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="vi"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Agent cho chuyên gia cá nhân sáng tạo nội dung</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=Lora:wght@500;600;700&display=swap');
+:root{
+  --paper:#fbf8ef;
+  --paper-2:#f5eddb;
+  --ink:#171713;
+  --muted:#706b60;
+  --line:#d9cfba;
+  --soft:#f0e8d8;
+  --green:#91d66b;
+  --mint:#b8efd1;
+  --sky:#a9d7ff;
+  --sun:#ffd56f;
+  --coral:#ff9f86;
+  --lav:#c9b8ff;
+  --rose:#ffc4d0;
+  --green-soft:#dff4d3;
+  --deep:#243f2a;
+  --dark:#18201a;
+  --dark-2:#20291f;
+  --serif:"Lora",Georgia,"Times New Roman",serif;
+  --sans:"Be Vietnam Pro","Segoe UI Variable","Segoe UI",Arial,sans-serif;
+  --mono:Consolas,"Cascadia Mono",monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:#2a2821;color:var(--ink);font:18px/1.45 var(--sans);overflow:hidden}
+#stage{position:fixed;inset:0;display:grid;place-items:center}
+.slide{width:1280px;height:720px;background:var(--paper);display:none;position:relative;overflow:hidden;box-shadow:0 26px 90px rgba(0,0,0,.34)}
+.slide.on{display:block}
+.slide::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 16% 10%,rgba(145,214,107,.23),transparent 28%),linear-gradient(90deg,rgba(23,23,19,.035) 1px,transparent 1px),linear-gradient(rgba(23,23,19,.026) 1px,transparent 1px);background-size:auto,64px 64px,64px 64px;pointer-events:none}
+.slide::after{content:"";position:absolute;right:-120px;bottom:-150px;width:430px;height:430px;border:2px solid rgba(36,63,42,.13);border-radius:50%;pointer-events:none}
+.slide.dark{background:var(--dark);color:#f8f4e8}
+.slide.dark::before{background:radial-gradient(circle at 82% 16%,rgba(145,214,107,.22),transparent 30%),linear-gradient(90deg,rgba(251,248,239,.055) 1px,transparent 1px),linear-gradient(rgba(251,248,239,.045) 1px,transparent 1px);background-size:auto,64px 64px,64px 64px}
+.slide.dark::after{border-color:rgba(145,214,107,.16)}
+.in{position:relative;height:100%;padding:54px 76px 44px;display:flex;flex-direction:column;z-index:1}
+.top,.foot{display:flex;justify-content:space-between;align-items:center;gap:20px;color:var(--muted);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+.top{border-bottom:1px solid var(--line);padding-bottom:12px}
+.foot{border-top:1px solid var(--line);padding-top:12px;margin-top:auto}
+.dark .top,.dark .foot{border-color:rgba(251,248,239,.18);color:#aaa28d}
+.top span:last-child,.foot span:last-child{border:1px solid currentColor;border-radius:999px;padding:5px 10px;background:rgba(145,214,107,.13);color:var(--deep)}
+.dark .top span:last-child,.dark .foot span:last-child{color:var(--green);background:rgba(145,214,107,.1)}
+.mid{flex:1;display:flex;flex-direction:column;justify-content:center;padding:28px 0}
+h1,h2{font-family:var(--serif);line-height:1.06;margin:0;letter-spacing:-.02em}
+h1{font-size:74px;max-width:930px}
+h2{font-size:52px;max-width:1040px}
+.sub{font-size:23px;color:var(--muted);max-width:940px;margin-top:22px}
+.dark .sub{color:#c9c0a8}
+.big{font-family:var(--serif);font-size:68px;line-height:1.13}
+.quote{font-family:var(--serif);font-size:50px;line-height:1.18;max-width:1040px;position:relative}
+.quote::before{content:"";display:block;width:86px;height:8px;background:var(--green);margin-bottom:28px;box-shadow:12px 12px 0 rgba(36,63,42,.13)}
+.dark .quote::before{box-shadow:12px 12px 0 rgba(0,0,0,.22)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px}
+.card{--accent:var(--green);border:1.5px solid color-mix(in srgb,var(--accent) 55%,var(--line));padding:24px;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 18%,#fff) 0%,rgba(255,255,255,.56) 52%,rgba(255,255,255,.36) 100%);box-shadow:7px 7px 0 color-mix(in srgb,var(--accent) 24%,transparent);position:relative;overflow:hidden}
+.dark .card{border-color:color-mix(in srgb,var(--accent) 46%,rgba(251,248,239,.18));background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 14%,rgba(255,255,255,.05)) 0%,rgba(255,255,255,.045) 70%);box-shadow:7px 7px 0 rgba(0,0,0,.18)}
+.k{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--deep);font-weight:800;margin-bottom:9px}
+.dark .k{color:var(--green)}
+.t{font-family:var(--serif);font-weight:700;font-size:28px;line-height:1.18}
+.p{color:var(--muted);margin-top:10px;font-size:17px}
+.dark .p{color:#c1b9a4}
+.rows{display:grid;gap:0;background:rgba(255,255,255,.3);border:1.5px solid var(--line);padding:4px 22px;box-shadow:9px 9px 0 rgba(36,63,42,.08)}
+.dark .rows{background:rgba(255,255,255,.04);border-color:rgba(251,248,239,.18)}
+.row{display:grid;grid-template-columns:190px 1fr 1.1fr;gap:22px;border-bottom:1px solid var(--line);padding:15px 0;align-items:start}
+.row:last-child{border-bottom:0}
+.dark .row{border-color:rgba(251,248,239,.16)}
+.row b{font-family:var(--serif);font-size:25px;color:var(--deep)}
+.dark .row b{color:var(--green)}
+.flow{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.step{--accent:var(--green);border:1.5px solid color-mix(in srgb,var(--accent) 62%,var(--deep));background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 28%,#fff) 0%,rgba(255,255,255,.54) 100%);padding:12px 18px;font-weight:850;box-shadow:5px 5px 0 color-mix(in srgb,var(--accent) 25%,transparent)}
+.dark .step{border-color:color-mix(in srgb,var(--accent) 70%,#fff);background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 22%,rgba(255,255,255,.06)) 0%,rgba(255,255,255,.05) 100%);box-shadow:5px 5px 0 rgba(0,0,0,.2)}
+.arrow{font-size:28px;color:var(--muted);font-family:var(--serif)}
+.dark .arrow{color:#9eb28f}
+.words{display:flex;flex-wrap:wrap;gap:12px}
+.chip{--accent:var(--green);border:1.5px solid color-mix(in srgb,var(--accent) 58%,var(--deep));background:color-mix(in srgb,var(--accent) 25%,#fff);padding:9px 15px;font-weight:850;box-shadow:4px 4px 0 color-mix(in srgb,var(--accent) 24%,transparent)}
+.dark .chip{border-color:color-mix(in srgb,var(--accent) 75%,#fff);background:color-mix(in srgb,var(--accent) 16%,rgba(255,255,255,.06));box-shadow:4px 4px 0 rgba(0,0,0,.2)}
+.prompt{border:1.5px solid var(--deep);background:#fffdf6;padding:28px;font:20px/1.55 var(--mono);white-space:pre-wrap;box-shadow:10px 10px 0 rgba(36,63,42,.1);position:relative}
+.prompt::before{content:"PROMPT";position:absolute;right:18px;top:-14px;background:var(--green);color:#142313;padding:5px 10px;font:800 11px/1 var(--sans);letter-spacing:.12em;border:1px solid var(--deep)}
+.dark .prompt{border-color:var(--green);background:#111711;color:#f8f4e8;box-shadow:10px 10px 0 rgba(0,0,0,.2)}
+.two{display:grid;grid-template-columns:1.1fr .9fr;gap:44px;align-items:center}
+.num{font-family:var(--serif);font-size:92px;color:#d8d0bd;line-height:1}
+.dark .num{color:#2d392d}
+ul{margin:12px 0 0 24px;padding:0}
+li{margin:9px 0}
+.nav{position:fixed;right:18px;bottom:14px;background:rgba(23,23,19,.72);color:#f8f4e8;border:1px solid rgba(251,248,239,.18);border-radius:999px;padding:7px 12px;font-size:12px;letter-spacing:.08em;z-index:9;box-shadow:0 10px 30px rgba(0,0,0,.24);opacity:.32;transition:.18s}
+.nav:hover{opacity:1}
+.slide:nth-of-type(1) h1::after,.slide:nth-of-type(5) .quote::after{content:"";display:block;width:160px;height:10px;background:var(--green);margin-top:26px;transform:rotate(-1deg)}
+.slide:nth-of-type(12) .card:nth-child(1){transform:rotate(-1.1deg)}
+.slide:nth-of-type(12) .card:nth-child(2){transform:rotate(.7deg)}
+.slide:nth-of-type(12) .card:nth-child(3){transform:rotate(-.4deg)}
+@media(max-width:900px){.slide{transform:scale(.72)} }
+.card:nth-child(6n+1),.step:nth-of-type(6n+1),.chip:nth-child(6n+1){--accent:var(--green)}
+.card:nth-child(6n+2),.step:nth-of-type(6n+2),.chip:nth-child(6n+2){--accent:var(--sky)}
+.card:nth-child(6n+3),.step:nth-of-type(6n+3),.chip:nth-child(6n+3){--accent:var(--sun)}
+.card:nth-child(6n+4),.step:nth-of-type(6n+4),.chip:nth-child(6n+4){--accent:var(--coral)}
+.card:nth-child(6n+5),.step:nth-of-type(6n+5),.chip:nth-child(6n+5){--accent:var(--lav)}
+.card:nth-child(6n+6),.step:nth-of-type(6n+6),.chip:nth-child(6n+6){--accent:var(--mint)}
+.flow .step:nth-of-type(1){--accent:var(--green)}
+.flow .step:nth-of-type(3){--accent:var(--sky)}
+.flow .step:nth-of-type(5){--accent:var(--sun)}
+.flow .step:nth-of-type(7){--accent:var(--coral)}
+.flow .step:nth-of-type(9){--accent:var(--lav)}
+.flow .step:nth-of-type(11){--accent:var(--mint)}
+.rows .row:nth-child(1) b{color:#2e6635}.rows .row:nth-child(2) b{color:#26639a}.rows .row:nth-child(3) b{color:#a1543e}
+.slide:nth-of-type(11) .card:nth-child(1){--accent:var(--mint)}
+.slide:nth-of-type(11) .card:nth-child(2){--accent:var(--sky)}
+.slide:nth-of-type(11) .card:nth-child(3){--accent:var(--lav)}
+.slide:nth-of-type(11) .card:nth-child(4){--accent:var(--sun)}
+.slide:nth-of-type(12) .card:nth-child(1){--accent:var(--sky)}
+.slide:nth-of-type(12) .card:nth-child(2){--accent:var(--sun)}
+.slide:nth-of-type(12) .card:nth-child(3){--accent:var(--green)}
+</style>
+</head>
+<body>
+<div id="stage">
+
+<section class="slide dark"><div class="in"><div class="top"><span>AI Agent</span><span>Sáng tạo nội dung</span></div><div class="mid"><h1>AI Agent cho chuyên gia<div>cá nhân sáng tạo nội dung</div></h1><p class="sub">Nâng cấp hiệu suất công việc với trợ lý AI Agent cho công việc sáng tạo nội dung: Từ tìm ý tưởng - dựng khung - hỗ trợ viết bài</p></div><div class="foot"><span>CITO</span><span>01</span></div></div></section>
+
+<section class="slide"><div class="in"><div class="top"><span>Mục tiêu</span><span>100 phút</span></div><div class="mid"><h2>Sau buổi này, các chuyên gia sẽ nhận được</h2><div class="grid2" style="margin-top:36px"><div class="card"><div class="k">01</div><div class="t">Research ý tưởng mới</div><div class="p">Tìm bài viết nước ngoài, tách idea, insight, framework và case.</div></div><div class="card"><div class="k">02</div><div class="t">Hiểu Desktop và Codex</div><div class="p">Phân biệt được Chat, Work, Codex</div></div><div class="card"><div class="k">03</div><div class="t">Viết bài có quy trình</div><div class="p">Đi từ brief, research, luận điểm, outline, draft, edit, fact check.</div></div><div class="card"><div class="k">04</div><div class="t">Đánh giá content AI</div><div class="p">Dùng E-E-A-T như checklist chất lượng, không coi là điểm SEO máy móc.</div></div></div></div><div class="foot"><span>Agenda</span><span>02</span></div></div></section>
+
+<section class="slide"><div class="in"><div class="top"><span>Vấn đề</span><span>Mặt bằng mới</span></div><div class="mid"><div class="quote">AI đang biến việc sản xuất, thực thi nội dung về mức trung bình khá</div><p class="sub">Ai cũng có thể tạo được một sản phẩm ở mức trung bình khá.</p></div><div class="foot"><span>Tư duy chính</span><span>03</span></div></div></section>
+
+<section class="slide"><div class="in"><div class="top"><span>Vấn đề</span><span>Nhiều quá hóa thường</span></div><div class="mid"><h2>Nhiều quá hóa thường</h2><div class="grid2" style="margin-top:34px"><div class="card"><div class="k">Khi còn hiếm</div><div class="t">Nội dung dài, đẹp, có cấu trúc</div><div class="p">Đã đủ để tạo cảm giác chuyên nghiệp.</div></div><div class="card"><div class="k">Khi ai cũng làm được</div><div class="t">Người xem cần nhiều hơn chữ</div><div class="p">Họ cần góc nhìn, chính kiến và trải nghiệm thật.</div></div></div><p class="sub">Những nội dung trước đây là quý, giờ giảm giá trị trong mắt người xem.</p></div><div class="foot"><span>Điểm chuyển</span><span>04</span></div></div></section>
+
+<section class="slide"><div class="in"><div class="top"><span>Desktop</span><span>Chat Work Codex</span></div><div class="mid"><h2>ChatGPT Desktop/Codex khác gì so với dùng thường</h2><div class="rows" style="margin-top:30px"><div class="row"><b>Chat</b><span>Sử dụng hỏi đáp nhanh</span><span>Ví dụ: tìm hook, giải thích khái niệm, viết caption nháp.</span></div><div class="row"><b>Work</b><span>Làm việc nhiều hơn với ngữ cảnh được lưu lại, có khả năng tạo file, có tool đi kèm</span><span>Ví dụ: research brief, report, outline, slide.</span></div><div class="row"><b>Codex</b><span>Làm việc toàn diện với khả năng coding, làm việc trong môi trường nền, sử dụng được nhiều công cụ nhất</span><span>Ví dụ: coding xây dựng dự án</span></div></div></div><div class="foot"><span>OpenAI docs</span><span>05</span></div></div></section>
+
+<section class="slide dark"><div class="in"><div class="top"><span>Điểm yếu của content AI</span><span>Luận điểm</span></div><div class="mid"><div class="quote">Những nguyên nhân gì khiến một sản phẩm bài viết AI kém chất lượng?</div><p class="sub">Các sếp giao cho nhân sự làm, nhưng khi đọc lại không biết sai ở đâu? Chỉ biết "sai sai", "không hay"?</p></div><div class="foot"><span>Trước khi tìm ý tưởng</span><span>06</span></div></div></section>
+
+<section class="slide dark"><div class="in"><div class="top"><span>Demo 1</span><span>Tìm ý tưởng</span></div><div class="mid"><h2>Biểu diễn: đào sâu một chủ đề để tìm ý viết bài</h2><div class="flow" style="margin-top:36px"><span class="step">Chọn chủ đề</span><span class="arrow">&gt;</span><span class="step">Tìm 3 bài</span><span class="arrow">&gt;</span><span class="step">Tự đọc</span><span class="arrow">&gt;</span><span class="step">Chốt 1 ý</span><span class="arrow">&gt;</span><span class="step">Viết sâu</span></div><p class="sub"><br></p></div><div class="foot"><span>Demo flow</span><span>07</span></div></div></section>
+
+<section class="slide"><div class="in"><div class="top"><span>Prompt đơn giản</span><span>Tiếng Việt</span></div><div class="mid"><h2>Tìm ý tưởng không cần làm phức tạp</h2><div class="prompt" style="margin-top:26px">Tôi muốn viết sâu về chủ đề: [chủ đề].
+
+Hãy giúp tôi tìm 3 hướng bài viết đáng đọc trên mạng. Trình bày chi tiết mỗi hướng, chỉ ra điểm hay có thể đưa vào bài.
+
+Hãy thảo luận, chưa làm ngay.</div></div><div class="foot"><span>Prompt demo</span><span>08</span></div></div></section>
+
+<section class="slide"><div class="in"><div class="top"><span>Task viết bài</span><span>Quy trình</span></div><div class="mid"><h2>Quy trình viết một bài bằng AI</h2><div class="flow" style="margin-top:34px"><span class="step">Brief</span><span class="arrow">&gt;</span><span class="step">Research</span><span class="arrow">&gt;</span><span class="step">Luận điểm</span><span class="arrow">&gt;</span><span class="step">Outline</span><span class="arrow">&gt;</span><span class="step">Draft</span><span class="arrow">&gt;</span><span class="step">Edit</span><span class="arrow">&gt;</span><span class="step">Fact check</span></div></div><div class="foot"><span>Writing OS</span><span>09</span></div></div></section>
+
+<section class="slide"><div class="in"><div class="top"><span>AI và người</span><span>Vai trò</span></div><div class="mid"><h2>Con người can thiệp ở đâu, để bài viết AI trở nên "có hồn" hơn, thuyết phục hơn</h2><div class="rows" style="margin-top:24px"><div class="row"><b>Trước khi viết</b><span>Chọn người đọc, mục tiêu, luận điểm, ví dụ thật.</span><span><br></span></div><div class="row"><b>Trong khi viết</b><span>Trực tiếp đưa ra dàn ý, chốt khung bài viết, thêm các ví dụ cá nhân vào nếu có. Lâu dài có thể xây dựng một rule viết bài, skill viết bài riêng</span><span><br></span></div><div class="row"><b>Trước khi đăng</b><span>Kiểm tra nhanh, sửa bài với AI và bảo AI ghi lại những lỗi sai vào folder dự án, skill</span><span><br></span></div></div></div><div class="foot"><span>Human judgment</span><span>10</span></div></div></section>
+
+<section class="slide dark"><div class="in"><div class="top"><span>Demo 2</span><span>Project viết bài</span></div><div class="mid"><h2>Cấu trúc cơ bản của một dự án viết bài với AI</h2><div class="words" style="margin-top:32px"><span class="chip">BRIEF.md</span><span class="chip">RESEARCH.md</span><span class="chip">OUTLINE.md</span><span class="chip">DRAFT.md</span><span class="chip">FACT-CHECK.md</span><span class="chip">STYLE-GUIDE.md</span></div><p class="sub"><br></p></div><div class="foot"><span>Workspace demo</span><span>11</span></div></div></section>
+
+<section class="slide"><div class="in"><div class="top"><span>Đánh giá</span><span>E-E-A-T</span></div><div class="mid"><h2>Công thức E-E-A-T - tiêu chuẩn mới của Google về content để tr ánh AI-slop</h2><div class="grid2" style="margin-top:30px"><div class="card"><div class="t">Experience</div><div class="p">Trải nghiệm trực tiếp, trải nghiệm thực tế. VD trải nghiệm mua hàng thật của khách hàng thật</div></div><div class="card"><div class="t">Expertise</div><div class="p">Tính chuyên môn. VD một bài chia sẻ về thương hiệu nên đến từ 1 chuyên gia về thương hiệu</div></div><div class="card"><div class="t">Authoritativeness</div><div class="p">Thẩm quyền, danh tiếng của bạn trong ngành như thế nào?</div></div><div class="card"><div class="t">Trust</div><div class="p">Sự trung thực và an toàn</div></div></div></div><div class="foot"><span>Google people-first</span><span>12</span></div></div></section>
+
+<section class="slide"><div class="in"><div class="top"><span>Mô hình lòng tin</span><span>Aibrand workbook</span></div><div class="mid"><h2>Tài năng, Chân thật, Tử tế</h2><div class="grid3" style="margin-top:34px"><div class="card"><div class="k">Tài năng</div><div class="t">Năng lực chứng minh được</div><div class="p">Kết quả thật, quy trình thật, hiểu việc mình đang nói.</div></div><div class="card"><div class="k">Chân thật</div><div class="t">Nói đúng điều mình có</div><div class="p">Không phông bạt, không nhận vơ trải nghiệm hay thành tích chưa có.</div></div><div class="card"><div class="k">Tử tế</div><div class="t">Thật lòng muốn giúp</div><div class="p">Không xem người xem là công cụ bán hàng hay nguồn traffic.</div></div></div><p class="sub" style="margin-top:28px">Tài năng cần thời gian tích lũy. Chân thật và Tử tế có thể bắt đầu ngay hôm nay.</p></div><div class="foot"><span>Trust model</span><span>13</span></div></div></section>
+
+<section class="slide"><div class="in"><div class="top"><span>Slide</span><span>Editable deck</span></div><div class="mid"><h2>Ứng dụng: Sử dụng AI làm slide bài giảng</h2><div class="flow" style="margin-top:34px"><span class="step">Idea</span><span class="arrow">&gt;</span><span class="step">Storyline</span><span class="arrow">&gt;</span><span class="step">Slide logic</span><span class="arrow">&gt;</span><span class="step">Layout</span><span class="arrow">&gt;</span><span class="step">Editable deck</span></div><p class="sub"><br></p></div><div class="foot"><span>Presentation workflow</span><span>14</span></div></div></section>
+
+</div>
+<div class="nav"><span id="count">1 / 14</span></div>
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+let i=0;
+function show(n){
+  i=(n+slides.length)%slides.length;
+  slides.forEach((s,k)=>s.classList.toggle('on',k===i));
+  document.getElementById('count').textContent=(i+1)+' / '+slides.length;
+}
+document.addEventListener('keydown',e=>{
+  if(['ArrowRight',' ','PageDown'].includes(e.key))show(i+1);
+  if(['ArrowLeft','PageUp'].includes(e.key))show(i-1);
+  if(e.key.toLowerCase()==='f')document.documentElement.requestFullscreen?.();
+});
+document.addEventListener('click',e=>{
+  if(e.clientX > window.innerWidth * .5) show(i+1);
+  else show(i-1);
+});
+show(0);
+</script>
+
+
+
+
+</body></html>
+
+
+
+
+
